@@ -4,14 +4,16 @@ import Colors from '../../../components/Colors';
 import FontsComponent from '../../../components/FontsComponent';
 import CustomButton from '../../../components/CustomButton';
 
-const MatchScreen2 = () => {
+const MatchScreen2 = props => {
   return (
     <View style={styles.screenVw}>
       <View style={styles.contentVw}>
         {/* ...............header................. */}
-        <View style={styles.header}>
+        <TouchableOpacity
+          style={styles.header}
+          onPress={() => props.navigation.navigate('MatchScreen')}>
           <Image source={require('../../../assets/arrowLeft.png')} />
-        </View>
+        </TouchableOpacity>
         {/* .........................image Vw................................ */}
         <View style={styles.imageVw}>
           <Image
@@ -71,6 +73,8 @@ const styles = StyleSheet.create({
   },
   textVw: {
     alignItems: 'center',
+    marginTop: 20,
+    marginBottom: 120,
   },
   btn2Vw: {
     height: 58,
@@ -79,7 +83,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: '#F5F5F5',
-    marginVertical: 20,
+    marginVertical: 10,
   },
   btn2Text: {
     fontWeight: 'bold',
@@ -104,9 +108,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   imageVw: {
-    // flexDirection: 'row',
+    flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
+    marginTop: 130,
   },
   circleText: {
     fontSize: 24,
@@ -115,15 +120,14 @@ const styles = StyleSheet.create({
     fontFamily: FontsComponent.bold,
   },
   image1: {
-    position: 'absolute',
-    left: 33,
+    zIndex: 1, // Push the  image to the back
   },
   image2: {
-    position: 'absolute',
-    left: 160,
+    zIndex: 2, //  should appear between the two images
+    marginLeft: -30, // Adjust this to control overlap between the images and the circle
   },
   imageM: {
-    position: 'absolute',
-    left: 150,
+    zIndex: 3, // Bring the first image to the front
+    marginLeft: -50, // Adjust this to control overlap between images
   },
 });
