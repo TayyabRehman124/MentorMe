@@ -12,6 +12,7 @@ import SurveyScreen from '../../screens/main/SurveyScreen';
 import MessageScreen from '../../screens/main/MessageScreen';
 import AudioCallScreen from '../../screens/main/AudioCallScreen';
 import VideoCallScreen from '../../screens/main/VideoCallScreen';
+import MatchScreen2 from '../../screens/main/MatchScreen2';
 import RewindScreen from '../../screens/main/RewindScreen';
 
 const Stack = createNativeStackNavigator();
@@ -33,6 +34,11 @@ function RootNavigator() {
         <Stack.Screen
           name="MessageScreen"
           component={MessageScreen}
+          options={{headerShown: false}}
+        />
+        <Stack.Screen
+          name="MatchScreen2"
+          component={MatchScreen2}
           options={{headerShown: false}}
         />
         <Stack.Screen
