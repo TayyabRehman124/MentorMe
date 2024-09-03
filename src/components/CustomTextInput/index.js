@@ -40,7 +40,11 @@ const CustomTextInput = ({
           )}
           <TextInput
             placeholder={placeholder}
-            style={[styles.textInput, inputStyle]}
+            style={[
+              styles.textInput,
+              inputStyle,
+              {width: rightIcon ? '60%' : '100%'},
+            ]}
             onChangeText={onChangeText}
             value={value}
             secureTextEntry={secureTextEntry}
@@ -91,7 +95,6 @@ const styles = StyleSheet.create({
   },
   textInput: {
     marginLeft: 10,
-    width: '60%',
     height: 60,
     fontFamily: 'Urbanist-VariableFont',
   },

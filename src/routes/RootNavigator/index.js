@@ -14,6 +14,8 @@ import AudioCallScreen from '../../screens/main/AudioCallScreen';
 import VideoCallScreen from '../../screens/main/VideoCallScreen';
 import MatchScreen2 from '../../screens/main/MatchScreen2';
 import RewindScreen from '../../screens/main/RewindScreen';
+import AccountApprovalScreen from '../../screens/main/AccountApprovalScreen';
+import AccountApprovedCodeScreen from '../../screens/main/AccountApprovedCodeScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -21,11 +23,16 @@ function RootNavigator() {
   return (
     <NavigationContainer>
       <Stack.Navigator>
-        {/* <Stack.Screen
-          name="RewindScreen"
-          component={RewindScreen}
+        <Stack.Screen
+          name="AccountApprovalScreen"
+          component={AccountApprovalScreen}
           options={{headerShown: false}}
-        /> */}
+        />
+        <Stack.Screen
+          name="AccountApprovedCodeScreen"
+          component={AccountApprovedCodeScreen}
+          options={{headerShown: false}}
+        />
         <Stack.Screen
           name="BordingScreen"
           component={BordingScreen}
@@ -34,6 +41,11 @@ function RootNavigator() {
         <Stack.Screen
           name="MessageScreen"
           component={MessageScreen}
+          options={{headerShown: false}}
+        />
+        <Stack.Screen
+          name="RewindScreen"
+          component={RewindScreen}
           options={{headerShown: false}}
         />
         <Stack.Screen

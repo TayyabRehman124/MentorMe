@@ -140,7 +140,7 @@ const MatchScreen = props => {
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.scrollContentStyle}>
           {yourMatch.map(item => (
-            <TouchableOpacity style={styles.yourMatchVw}>
+            <TouchableOpacity key={item.id} style={styles.yourMatchVw}>
               <Image source={item.image} style={styles.yourMatchImage} />
               <Text style={styles.yourMatchName}>{item.name}</Text>
               <Text style={styles.yourMatchStatus}>{item.status}</Text>
