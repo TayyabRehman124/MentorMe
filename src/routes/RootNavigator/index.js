@@ -1,4 +1,5 @@
 import * as React from 'react';
+import {useEffect} from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import LoginScreen from '../../screens/auth/LoginScreen';
@@ -16,23 +17,21 @@ import MatchScreen2 from '../../screens/main/MatchScreen2';
 import RewindScreen from '../../screens/main/RewindScreen';
 import AccountApprovalScreen from '../../screens/main/AccountApprovalScreen';
 import AccountApprovedCodeScreen from '../../screens/main/AccountApprovedCodeScreen';
-
+import SplashScreen from 'react-native-splash-screen';
 const Stack = createNativeStackNavigator();
 
 function RootNavigator() {
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      SplashScreen.hide(); // Hide splash screen after two seconds
+    }, 2000);
+
+    return () => clearTimeout(timer); // Clear the timer if the component unmounts
+  }, []);
+
   return (
     <NavigationContainer>
       <Stack.Navigator>
-        <Stack.Screen
-          name="AccountApprovalScreen"
-          component={AccountApprovalScreen}
-          options={{headerShown: false}}
-        />
-        <Stack.Screen
-          name="AccountApprovedCodeScreen"
-          component={AccountApprovedCodeScreen}
-          options={{headerShown: false}}
-        />
         <Stack.Screen
           name="BordingScreen"
           component={BordingScreen}
@@ -43,11 +42,7 @@ function RootNavigator() {
           component={MessageScreen}
           options={{headerShown: false}}
         />
-        <Stack.Screen
-          name="RewindScreen"
-          component={RewindScreen}
-          options={{headerShown: false}}
-        />
+
         <Stack.Screen
           name="MatchScreen2"
           component={MatchScreen2}
@@ -97,6 +92,21 @@ function RootNavigator() {
         <Stack.Screen
           name="VideoCallScreen"
           component={VideoCallScreen}
+          options={{headerShown: false}}
+        />
+        <Stack.Screen
+          name="AccountApprovalScreen"
+          component={AccountApprovalScreen}
+          options={{headerShown: false}}
+        />
+        <Stack.Screen
+          name="AccountApprovedCodeScreen"
+          component={AccountApprovedCodeScreen}
+          options={{headerShown: false}}
+        />
+        <Stack.Screen
+          name="RewindScreen"
+          component={RewindScreen}
           options={{headerShown: false}}
         />
       </Stack.Navigator>

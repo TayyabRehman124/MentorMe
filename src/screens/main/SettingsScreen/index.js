@@ -2,17 +2,21 @@ import {Image, StyleSheet, Text, View, TouchableOpacity} from 'react-native';
 import React from 'react';
 import Colors from '../../../components/Colors';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import ProfileScreen from '../ProfileScreen';
 
-const SettingsScreen = () => {
+const SettingsScreen = props => {
   return (
     <View style={styles.screenVw}>
       <View style={styles.contentVw}>
         {/* ............header................ */}
         <View style={styles.header}>
-          <Image
-            source={require('../../../assets/arrowLeft.png')}
-            style={styles.picIcon}
-          />
+          <TouchableOpacity
+            onPress={() => props.navigation.navigate(ProfileScreen)}>
+            <Image
+              source={require('../../../assets/arrowLeft.png')}
+              style={styles.picIcon}
+            />
+          </TouchableOpacity>
           <Text style={styles.heading}>Settings</Text>
         </View>
         {/* ......................menu............................... */}
@@ -90,13 +94,15 @@ const SettingsScreen = () => {
           {/* ...........security........ */}
           <TouchableOpacity
             style={styles.touchBar}
-            onPress={() => props.navigation.navigate('SettingsScreen')}>
+            onPress={() => props.navigation.navigate('AccountApprovalScreen')}>
             <View style={{flexDirection: 'row', alignItems: 'center'}}>
               <Image
                 source={require('../../../assets/security.png')}
                 style={styles.ImageIcon}
               />
-              <Text style={styles.barText}>Security</Text>
+              <Text style={styles.barText}>
+                Security / AccountApprovalScreen
+              </Text>
             </View>
             <Ionicons
               name={'chevron-forward-outline'}
@@ -124,13 +130,15 @@ const SettingsScreen = () => {
           {/* ...........Feedback........ */}
           <TouchableOpacity
             style={styles.touchBar}
-            onPress={() => props.navigation.navigate('SettingsScreen')}>
+            onPress={() => props.navigation.navigate('AccountDeletionScreen')}>
             <View style={{flexDirection: 'row', alignItems: 'center'}}>
               <Image
                 source={require('../../../assets/feedback.png')}
                 style={styles.ImageIcon}
               />
-              <Text style={styles.barText}>Feedback</Text>
+              <Text style={styles.barText}>
+                Feedback / AccountDeletionScreen
+              </Text>
             </View>
             <Ionicons
               name={'chevron-forward-outline'}
@@ -165,7 +173,7 @@ const SettingsScreen = () => {
                 source={require('../../../assets/about.png')}
                 style={styles.ImageIcon}
               />
-              <Text style={styles.barText}>About MentorConnect</Text>
+              <Text style={styles.barText}>About Mentor Connect</Text>
             </View>
             <Ionicons
               name={'chevron-forward-outline'}
@@ -209,6 +217,7 @@ const styles = StyleSheet.create({
   },
   touchBar: {
     justifyContent: 'space-between',
+    alignItems: 'center',
     flexDirection: 'row',
     paddingHorizontal: 5,
   },

@@ -4,6 +4,7 @@ import Colors from '../../../components/Colors';
 import Feather from 'react-native-vector-icons/Feather';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
+import RewindScreen from '../RewindScreen';
 
 const ProfileScreen = props => {
   return (
@@ -32,7 +33,9 @@ const ProfileScreen = props => {
             <Text style={{color: '#FFFFFF', fontSize: 12}}>
               Enjoy unlimited swiping, like, without restrictions, & without ads
             </Text>
-            <TouchableOpacity style={styles.PremiumBtn}>
+            <TouchableOpacity
+              style={styles.PremiumBtn}
+              onPress={() => props.navigation.navigate(RewindScreen)}>
               <Text
                 style={{color: Colors.orange, fontSize: 14, fontWeight: '600'}}>
                 Get Premium
