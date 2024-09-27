@@ -31,84 +31,33 @@ function RootNavigator() {
 
   return (
     <NavigationContainer>
-      <Stack.Navigator>
-        <Stack.Screen
-          name="BordingScreen"
-          component={BordingScreen}
-          options={{headerShown: false}}
-        />
-        <Stack.Screen
-          name="MessageScreen"
-          component={MessageScreen}
-          options={{headerShown: false}}
-        />
+      <Stack.Navigator screenOptions={{headerShown: false}}>
+        <Stack.Screen name="BordingScreen" component={BordingScreen} />
+        <Stack.Screen name="MessageScreen" component={MessageScreen} />
 
-        <Stack.Screen
-          name="MatchScreen2"
-          component={MatchScreen2}
-          options={{headerShown: false}}
-        />
+        <Stack.Screen name="MatchScreen2" component={MatchScreen2} />
         <Stack.Screen
           name="AccountDeletionScreen"
           component={AccountDeletionScreen}
-          options={{headerShown: false}}
         />
-        <Stack.Screen
-          name="SurveyScreen"
-          component={SurveyScreen}
-          options={{headerShown: false}}
-        />
+        <Stack.Screen name="SurveyScreen" component={SurveyScreen} />
 
-        <Stack.Screen
-          name="LoginScreen"
-          component={LoginScreen}
-          options={{headerShown: false}}
-        />
-        <Stack.Screen
-          name="SignupScreen"
-          component={SignupScreen}
-          options={{headerShown: false}}
-        />
-        <Stack.Screen
-          name="BottomTab"
-          component={BottomTab}
-          options={{headerShown: false}}
-        />
-        <Stack.Screen
-          name="SettingsScreen"
-          component={SettingsScreen}
-          options={{headerShown: false}}
-        />
-        <Stack.Screen
-          name="HelpCenterScreen"
-          component={HelpCenterScreen}
-          options={{headerShown: false}}
-        />
-        <Stack.Screen
-          name="AudioCallScreen"
-          component={AudioCallScreen}
-          options={{headerShown: false}}
-        />
-        <Stack.Screen
-          name="VideoCallScreen"
-          component={VideoCallScreen}
-          options={{headerShown: false}}
-        />
+        <Stack.Screen name="LoginScreen" component={LoginScreen} />
+        <Stack.Screen name="SignupScreen" component={SignupScreen} />
+        <Stack.Screen name="BottomTab" component={BottomTab} />
+        <Stack.Screen name="SettingsScreen" component={SettingsScreen} />
+        <Stack.Screen name="HelpCenterScreen" component={HelpCenterScreen} />
+        <Stack.Screen name="AudioCallScreen" component={AudioCallScreen} />
+        <Stack.Screen name="VideoCallScreen" component={VideoCallScreen} />
         <Stack.Screen
           name="AccountApprovalScreen"
           component={AccountApprovalScreen}
-          options={{headerShown: false}}
         />
         <Stack.Screen
           name="AccountApprovedCodeScreen"
           component={AccountApprovedCodeScreen}
-          options={{headerShown: false}}
         />
-        <Stack.Screen
-          name="RewindScreen"
-          component={RewindScreen}
-          options={{headerShown: false}}
-        />
+        <Stack.Screen name="RewindScreen" component={RewindScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

@@ -1,4 +1,5 @@
 import {
+  ActivityIndicator,
   StyleSheet,
   Text,
   View,
@@ -16,53 +17,72 @@ import CustomInput from '../../../components/CustomTextInput';
 import CustomButton from '../../../components/CustomButton';
 import FontAwesome6 from 'react-native-vector-icons/FontAwesome6';
 import {useState} from 'react';
+//.............redux...................
+import {useDispatch} from 'react-redux';
+import {setUserData} from '../../../components/redux/Action';
 import {
   GoogleSignin,
   GoogleSigninButton,
   statusCodes,
 } from '@react-native-google-signin/google-signin';
+// .............................Configure Google Sign-In
 GoogleSignin.configure({
   webClientId:
     '743868485620-fhnrut2ee0ng5k5nt8b0ij613o4in3ff.apps.googleusercontent.com',
 });
-//Google login........................................
-async function onGoogleButtonPress() {
-  try {
-    // Sign out any previously signed-in user to prompt account selection again
-    await GoogleSignin.signOut();
-    // Check if the device supports Google Play services
-    await GoogleSignin.hasPlayServices({showPlayServicesUpdateDialog: true});
 
-    // Sign in the user and retrieve userInfo
-    const userInfo = await GoogleSignin.signIn();
-
-    // Log userInfo to inspect the structure
-    console.log('User Info: ', userInfo);
-
-    // Retrieve idToken from the correct property
-    const idToken = userInfo.idToken || userInfo.data.idToken;
-
-    // Log the idToken to verify it's being retrieved correctly
-    console.log('ID Token: ', idToken);
-
-    if (!idToken) {
-      throw new Error('Google Sign-In failed: No ID token received.');
-    }
-
-    // Create credential using idToken
-    const googleCredential = auth.GoogleAuthProvider.credential(idToken);
-
-    // Sign in to Firebase with Google credential
-    await auth().signInWithCredential(googleCredential);
-    //Alert.alert('Success', 'Google Sign-In Successful!');
-  } catch (error) {
-    console.error(error);
-    Alert.alert('Google Sign-In Error', error.message);
-  }
-}
-
-//......................................
+//............................main func....................
 const SignupScreen = props => {
+  const dispatch = useDispatch(); //....for redux..............
+  const [showLoader, setshowLoader] = useState(false); //....loader.......
+  const onGoogleButtonPress = async () => {
+    try {
+      // Sign out any previously signed-in user to prompt account selection again
+      await GoogleSignin.signOut();
+      // Check if the device supports Google Play services
+      await GoogleSignin.hasPlayServices({showPlayServicesUpdateDialog: true});
+
+      // Sign in the user and retrieve userInfo
+      const userInfo = await GoogleSignin.signIn();
+
+      // Log userInfo to inspect the structure
+      console.log('User Info: ', userInfo);
+
+      // Retrieve idToken from the correct property
+      const idToken = userInfo.idToken || userInfo.data.idToken;
+
+      // Log the idToken to verify it's being retrieved correctly
+      console.log('ID Token: ', idToken);
+
+      if (!idToken) {
+        throw new Error('Google Sign-In failed: No ID token received.');
+      }
+      setshowLoader(true); // Show loader when signing in with Google
+
+      // Create credential using idToken
+      const googleCredential = auth.GoogleAuthProvider.credential(idToken);
+
+      // Sign in to Firebase with Google credential
+      await auth().signInWithCredential(googleCredential);
+      //Alert.alert('Success', 'Google Sign-In Successful!');
+      // Extract useful user information
+      const userData = {
+        name: userInfo.data.user.name,
+        email: userInfo.data.user.email,
+        photo: userInfo.data.user.photo,
+        id: userInfo.data.user.id,
+      };
+      // setUserInfo(userData);
+      console.log('Success', 'Google Sign-In Successful!');
+      dispatch(setUserData(userData)); // Dispatch user data to Redux store
+      setshowLoader(false); // hide loader when go to home
+      props.navigation.navigate('BottomTab', {user: userInfo});
+    } catch (error) {
+      console.error(error);
+      Alert.alert('Google Sign-In Error', error.message);
+    }
+  };
+
   const [inputs, setInputs] = React.useState({
     email: '',
     password: '',
@@ -105,25 +125,7 @@ const SignupScreen = props => {
       valid = false;
     }
     if (valid) {
-      // Authentication process
-      auth()
-        .createUserWithEmailAndPassword(inputs.email, inputs.password)
-        .then(() => {
-          console.log('User account created & signed in!');
-          props.navigation.navigate('BottomTab');
-        })
-        .catch(error => {
-          if (error.code === 'auth/email-already-in-use') {
-            //console.log('That email address is already in use!');
-            Alert.alert('Already signedUp.Plz logIn');
-          }
-
-          if (error.code === 'auth/invalid-email') {
-            console.log('That email address is invalid!');
-          }
-
-          console.error(error);
-        });
+      emailLogin();
     }
   };
   const [check, setCheck] = useState(null);
@@ -131,6 +133,41 @@ const SignupScreen = props => {
     setCheck(!check);
   };
   const [isSecureTextEntry, setIsSecureTextEntry] = useState(true);
+  //.............................email logIn.........
+  const emailLogin = () => {
+    setshowLoader(true);
+    // Authentication process
+    auth()
+      .createUserWithEmailAndPassword(inputs.email, inputs.password)
+      .then(() => {
+        setshowLoader(false);
+        console.log('User account created & signed in!');
+        props.navigation.navigate('BottomTab');
+      })
+      .catch(error => {
+        if (error.code === 'auth/email-already-in-use') {
+          //console.log('That email address is already in use!');
+          Alert.alert('Already signedUp.Plz logIn');
+        }
+
+        if (error.code === 'auth/invalid-email') {
+          console.log('That email address is invalid!');
+        }
+
+        console.error(error);
+      });
+    console.log('email user', auth().currentUser);
+    const emailUserData = auth().currentUser;
+    if (emailUserData) {
+      const userData = {
+        name: emailUserData.displayName || 'Email User', // Fallback if no displayName
+        email: emailUserData.email,
+        photo: emailUserData.photoURL || null, // Fallback if no photoURL
+        uid: emailUserData.uid,
+      };
+      dispatch(setUserData(userData)); // Dispatch user data to Redux store
+    }
+  };
   return (
     <ScrollView showsVerticalScrollIndicator={false} style={styles.screenView}>
       <View style={styles.content}>
@@ -159,6 +196,7 @@ const SignupScreen = props => {
           placeholder={'Password'}
           icon={require('../../../assets/lock.png')}
           secureTextEntry={isSecureTextEntry}
+          keyboardType="numeric"
           onChangeText={text => handleOnChange(text, 'password')}
           errorMessage={errors.password}
           onFocus={() => {
@@ -238,6 +276,12 @@ const SignupScreen = props => {
         </TouchableOpacity>
         {/* ............................................................ */}
       </View>
+      {/* Loader Overlay */}
+      {showLoader && (
+        <View style={styles.loaderContainer}>
+          <ActivityIndicator size="large" color={Colors.orange} />
+        </View>
+      )}
     </ScrollView>
   );
 };
@@ -325,5 +369,16 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
     height: 6,
     width: 9,
+  },
+  loaderContainer: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0,0,0,0.5)', // Semi-transparent background
+    zIndex: 10, // Ensure it's on top
   },
 });

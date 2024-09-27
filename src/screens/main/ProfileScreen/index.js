@@ -7,20 +7,32 @@ import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import RewindScreen from '../RewindScreen';
 import auth from '@react-native-firebase/auth';
 import {GoogleSignin} from '@react-native-google-signin/google-signin';
+//.............redux...................
+import {useDispatch} from 'react-redux'; //........to Dispatch data to redux data...........
+import {logoutUser} from '../../../components/redux/Action';
+import {useSelector} from 'react-redux'; //........to receive redux data...........
 
 const ProfileScreen = props => {
-  const [user, setUser] = useState(null);
-  const signOut = () =>
+  const dispatch = useDispatch(); //....for redux..............
+
+  const user = useSelector(state => state.user.user); //....to receive redux data.......
+  console.log('prof user', user);
+  //................signOut...........................
+  const signOut = () => {
     auth()
       .signOut()
       .then(() => console.log('User signed out!'));
+    dispatch(logoutUser()); // Set user to null after signing out
+  };
+  //................googleSignOut...........................
   const googleSignOut = async () => {
     try {
       await GoogleSignin.signOut();
-      setUser(null); // Set user to null after signing out
+      dispatch(logoutUser()); // Set user to null after signing out
     } catch (error) {
       console.error(error);
     }
+    //...................................
   };
   return (
     <View style={styles.screenVw}>
@@ -37,7 +49,14 @@ const ProfileScreen = props => {
         </View>
         {/* ...................profile Pic.................................. */}
         <View style={styles.profilePicVw}>
-          <Image source={require('../../../assets/profilePic.png')} />
+          <Image
+            source={
+              user.photo
+                ? {uri: user.photo}
+                : require('../../../assets/userDumy.png')
+            }
+            style={styles.profilePic}
+          />
         </View>
         {/* ......................Enjoy All Benefits!............................... */}
         <View style={styles.benefitsVW}>
@@ -261,5 +280,10 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginTop: 10,
     height: 235,
+  },
+  profilePic: {
+    height: 200,
+    width: 200,
+    borderRadius: 50,
   },
 });

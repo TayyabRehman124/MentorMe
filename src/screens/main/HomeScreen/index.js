@@ -1,5 +1,4 @@
 import {
-  Modal,
   StyleSheet,
   Text,
   View,
@@ -8,7 +7,7 @@ import {
   Dimensions,
   ImageBackground,
 } from 'react-native';
-import React, {useCallback, useState, useMemo, useRef} from 'react';
+import React, {useEffect, useCallback, useState, useMemo, useRef} from 'react';
 import {GestureHandlerRootView, TextInput} from 'react-native-gesture-handler';
 import FontsComponent from '../../../components/FontsComponent';
 import Colors from '../../../components/Colors';
@@ -19,10 +18,12 @@ import BottomSheet, {
   TouchableOpacity,
 } from '@gorhom/bottom-sheet';
 import DoubleSlider from '../../../components/DoubleSlider';
+import {useSelector} from 'react-redux'; //........to receive redux data...........
 
-const HomeScreen = ({route}) => {
-  // const {user} = route.params;
-  // console.log('Received User Info:', user);
+const HomeScreen = () => {
+  const user = useSelector(state => state.user.user); //....to receive redux data.......
+  console.log('User data in HomeScreen:', user); // Should show the user data
+
   const [bottomSheetIndex, setBottomSheetIndex] = useState(-1);
   const toggleBottomSheet = () => {
     setBottomSheetIndex(prevIndex => (prevIndex === -1 ? 2 : -1)); // Toggle between closed (-1) and open (2)
@@ -62,11 +63,9 @@ const HomeScreen = ({route}) => {
   const MAX_DEFAULT = 100;
   const [minValue, setMinValue] = useState(MIN_DEFAULT);
   const [maxValue, setMaxValue] = useState(MAX_DEFAULT);
-  // const bottomSheetRef = useRef < BottomSheet > null;
+  // ....................bottom sheet ................
   const snapPoints = useMemo(() => ['25%', '50%', '75%'], []);
-  // const handleSheetChanges = useCallback((index: number) => {
-  //   console.log('handleSheetChanges', index);
-  // }, []);
+  //...........................................
   const renderBackdrop = useCallback(
     props => (
       <BottomSheetBackdrop
@@ -84,17 +83,16 @@ const HomeScreen = ({route}) => {
         <View style={styles.headerVw}>
           <View style={styles.headerLeftVw}>
             <Image
-              source={require('../../../assets/profilePic.png')}
+              source={
+                user.photo
+                  ? {uri: user.photo}
+                  : require('../../../assets/userDumy.png')
+              }
               style={styles.profilePic}
             />
             <View style={styles.headerTextVw}>
               <Text style={styles.headerText1}>Good Morning 👋</Text>
-              {/* {userInfo && userInfo.data && userInfo.data.user ? (
-                <Text>{userInfo.data.user.givenName}</Text>
-              ) : (
-                <Text>Guest</Text> // Fallback if name isn't available
-              )} */}
-              <Text style={styles.headerText2}>Shandontoliver</Text>
+              <Text style={styles.headerText2}>{user?.name}</Text>
             </View>
           </View>
           <TouchableOpacity
@@ -161,12 +159,7 @@ const HomeScreen = ({route}) => {
         </View>
 
         {/* ..............BottomSheet.................. */}
-        {/* <Modal
-          visible={bottomSheetVisible}
-          transparent={true}
-          animationType="slide"
-          onRequestClose={toggleBottomSheet}>
-          <View style={styles.modalOverlay} /> */}
+
         {bottomSheetIndex >= 0 && (
           <BottomSheet
             index={2} // Start at the first snap point, which is 50%
@@ -333,6 +326,7 @@ const styles = StyleSheet.create({
   profilePic: {
     height: 48,
     width: 48,
+    borderRadius: 50,
   },
   headerTextVw: {
     marginLeft: 10,

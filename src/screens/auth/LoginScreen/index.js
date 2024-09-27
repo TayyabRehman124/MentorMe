@@ -18,46 +18,61 @@ import CustomButton from '../../../components/CustomButton';
 import FontAwesome6 from 'react-native-vector-icons/FontAwesome6';
 import {GoogleSignin} from '@react-native-google-signin/google-signin';
 import BottomTab from '../../../routes/BottomTab';
-
-// Configure Google Sign-In
+//.............redux...................
+import {useDispatch} from 'react-redux';
+import {setUserData} from '../../../components/redux/Action';
+// .............................Configure Google Sign-In
 GoogleSignin.configure({
   webClientId:
     '743868485620-fhnrut2ee0ng5k5nt8b0ij613o4in3ff.apps.googleusercontent.com',
 });
-
+//............................main func....................
 const LoginScreen = props => {
+  const dispatch = useDispatch(); //....for redux..............
+
+  // ............................
   const [inputs, setInputs] = useState({email: '', password: ''});
   const [errors, setErrors] = useState({email: '', password: ''});
-  const [userInfo, setUserInfo] = useState(null); // State to hold user info
+
   //..................loader................
   const [showLoader, setshowLoader] = useState(false);
-  // const loader = () => {
-  //   const showLoader = () => {
-  //     setshowLoader(true);
-  //     setTimeout(() => {
-  //       setshowLoader(false);
-  //     }, 3000);
-  //   };
-  //   return (
-  //     <View>
-  //       <Text>loader</Text>
-  //       <ActivityIndicator size={100} color={'orange'} animating={loader} />
-  //       <Button title="loader" onPress={showLoader} />
-  //     </View>
-  //   );
-  // };
   //.....................................
   const handleOnChange = (text, CustomTextInput) => {
     setInputs(prevState => ({...prevState, [CustomTextInput]: text}));
   };
-
   const handleError = (errorMessage, CustomTextInput) => {
     setErrors(prevState => ({
       ...prevState,
       [CustomTextInput]: errorMessage,
     }));
   };
+  //.............................email logIn.........
+  const emailLogin = () => {
+    setshowLoader(true);
+    auth()
+      .signInWithEmailAndPassword(inputs.email, inputs.password)
+      .then(() => {
+        setshowLoader(false);
+        props.navigation.navigate('BottomTab');
+      })
+      .catch(error => {
+        Alert.alert('Account not found');
+      });
+    console.log('email user', auth().currentUser);
+    const emailUserData = auth().currentUser;
+    //console.log('emailUser Info name: ', emailUserData.email); // Log the entire userInfo
+    if (emailUserData) {
+      const userData = {
+        name: emailUserData.displayName || 'Email User', // Fallback if no displayName
+        email: emailUserData.email,
+        photo: emailUserData.photoURL || null, // Fallback if no photoURL
+        uid: emailUserData.uid,
+      };
+      dispatch(setUserData(userData)); // Dispatch user data to Redux store
+    }
+  };
 
+  //..................validater....................
   const validater = () => {
     Keyboard.dismiss();
     let valid = true;
@@ -76,25 +91,17 @@ const LoginScreen = props => {
       valid = false;
     }
     if (valid) {
-      setshowLoader(true);
-      auth()
-        .signInWithEmailAndPassword(inputs.email, inputs.password)
-        .then(() => {
-          props.navigation.navigate('BottomTab');
-        })
-        .catch(error => {
-          Alert.alert('Account not found');
-        });
+      emailLogin();
     }
   };
-
+  //..........................................google sign in code.....................
   const onGoogleButtonPress = async () => {
     try {
       await GoogleSignin.signOut();
       await GoogleSignin.hasPlayServices({showPlayServicesUpdateDialog: true});
-
       const userInfo = await GoogleSignin.signIn();
       console.log('User Info: ', userInfo); // Log the entire userInfo object
+      console.log('User Info name: ', userInfo.data.user.name); // Log the entire userInfo object
 
       // Check where the ID token is located
       const idToken =
@@ -109,11 +116,19 @@ const LoginScreen = props => {
       setshowLoader(true); // Show loader when signing in with Google
       const googleCredential = auth.GoogleAuthProvider.credential(idToken);
       await auth().signInWithCredential(googleCredential);
+
+      // Extract useful user information
+      const userData = {
+        name: userInfo.data.user.name,
+        email: userInfo.data.user.email,
+        photo: userInfo.data.user.photo,
+        id: userInfo.data.user.id,
+      };
+      // setUserInfo(userData);
       console.log('Success', 'Google Sign-In Successful!');
-      console.log('Navigating to HomeScreen with User Info:', userInfo);
 
-      setUserInfo(userInfo);
-
+      dispatch(setUserData(userData)); // Dispatch user data to Redux store
+      setshowLoader(false); // hide loader when go to home
       props.navigation.navigate('BottomTab', {user: userInfo});
       BottomTab;
     } catch (error) {
@@ -144,6 +159,7 @@ const LoginScreen = props => {
             secureTextEntry={true}
             onChangeText={text => handleOnChange(text, 'password')}
             errorMessage={errors.password}
+            keyboardType="numeric"
             onFocus={() => handleError(null, 'password')}
             rightIcon={<FontAwesome6 name="eye" size={20} color="#212121" />}
           />
@@ -152,11 +168,6 @@ const LoginScreen = props => {
           <View style={styles.lineView}>
             <View style={styles.line} />
             <Text style={styles.text3}>Or continue with</Text>
-            {/* {userInfo && userInfo.data && userInfo.data.user ? (
-            <Text>{userInfo.data.user.givenName}</Text>
-          ) : (
-            <Text>Guest</Text> // Fallback if name isn't available
-          )} */}
             <View style={styles.line} />
           </View>
           <View style={styles.ImageContainer}>
