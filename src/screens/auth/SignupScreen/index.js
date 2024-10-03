@@ -35,18 +35,22 @@ GoogleSignin.configure({
 const SignupScreen = props => {
   const dispatch = useDispatch(); //....for redux..............
   const [showLoader, setshowLoader] = useState(false); //....loader.......
+  //...............check......................
+  const [rememberMe, setRememberMe] = useState(false);
+  const handleCheck = () => {
+    setRememberMe(!rememberMe);
+  };
+  //.................onGoogleButtonPress.........................
   const onGoogleButtonPress = async () => {
     try {
       // Sign out any previously signed-in user to prompt account selection again
       await GoogleSignin.signOut();
       // Check if the device supports Google Play services
       await GoogleSignin.hasPlayServices({showPlayServicesUpdateDialog: true});
-
-      // Sign in the user and retrieve userInfo
-      const userInfo = await GoogleSignin.signIn();
+      const userInfo = await GoogleSignin.signIn(); // Sign in the user and retrieve userInfo
 
       // Log userInfo to inspect the structure
-      console.log('User Info: ', userInfo);
+      // console.log('User Info: ', userInfo);
 
       // Retrieve idToken from the correct property
       const idToken = userInfo.idToken || userInfo.data.idToken;
@@ -75,6 +79,7 @@ const SignupScreen = props => {
       // setUserInfo(userData);
       console.log('Success', 'Google Sign-In Successful!');
       dispatch(setUserData(userData)); // Dispatch user data to Redux store
+      await AsyncStorage.setItem('check-status', rememberMe ? 'true' : 'false'); //....store to local storage
       setshowLoader(false); // hide loader when go to home
       props.navigation.navigate('BottomTab', {user: userInfo});
     } catch (error) {
@@ -128,10 +133,6 @@ const SignupScreen = props => {
       emailLogin();
     }
   };
-  const [check, setCheck] = useState(null);
-  const handleCheck = () => {
-    setCheck(!check);
-  };
   const [isSecureTextEntry, setIsSecureTextEntry] = useState(true);
   //.............................email logIn.........
   const emailLogin = () => {
@@ -167,12 +168,14 @@ const SignupScreen = props => {
       };
       dispatch(setUserData(userData)); // Dispatch user data to Redux store
     }
+    AsyncStorage.setItem('check-status', rememberMe ? 'true' : 'false'); //....store to local storage
   };
   return (
     <ScrollView showsVerticalScrollIndicator={false} style={styles.screenView}>
       <View style={styles.content}>
         <AuthHeader onPress={() => props.navigation.navigate('LoginScreen')} />
         <Text style={styles.heading}>Create Your Account</Text>
+        {/* ................Email..................................... */}
         <CustomInput
           placeholder={'Email Address'}
           icon={require('../../../assets/email.png')}
@@ -183,6 +186,7 @@ const SignupScreen = props => {
             handleError(null, 'email');
           }}
         />
+        {/* ................Referral..................................... */}
         <CustomInput
           placeholder={'Referral Code'}
           icon={require('../../../assets/referral.png')}
@@ -192,6 +196,7 @@ const SignupScreen = props => {
             handleError(null, 'referralCode');
           }}
         />
+        {/* ................Password..................................... */}
         <CustomInput
           placeholder={'Password'}
           icon={require('../../../assets/lock.png')}
@@ -217,7 +222,7 @@ const SignupScreen = props => {
         {/* ..............................................checkbox................ */}
         <TouchableOpacity style={styles.checkboxView} onPress={handleCheck}>
           <View style={styles.checkbox}>
-            {check && (
+            {rememberMe && (
               <Image
                 source={require('../../../assets/check.png')}
                 style={styles.check}
@@ -227,7 +232,7 @@ const SignupScreen = props => {
           <Text>Remember me</Text>
         </TouchableOpacity>
 
-        {/* ....................................................... */}
+        {/* ................Sign up Button....................................... */}
 
         <CustomButton title={'Sign up'} onPress={validater} />
 
@@ -239,7 +244,7 @@ const SignupScreen = props => {
           </View>
           <View style={styles.line} />
         </View>
-        {/* ....................................... */}
+        {/* ............logIn with google........................... */}
         <View style={styles.ImageContainer}>
           <View style={styles.ImageView}>
             <Image
@@ -262,7 +267,7 @@ const SignupScreen = props => {
             />
           </View>
         </View>
-        {/* ........................................................... */}
+        {/* ............. Already have an account?........................ */}
         <TouchableOpacity
           style={{alignSelf: 'center', marginTop: 25}}
           onPress={() => props.navigation.navigate('LoginScreen')}>

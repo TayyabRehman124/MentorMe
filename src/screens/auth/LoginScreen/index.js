@@ -9,6 +9,7 @@ import {
   ScrollView,
   ActivityIndicator,
   Alert,
+  Button,
 } from 'react-native';
 import auth from '@react-native-firebase/auth';
 import Colors from '../../../components/Colors';
@@ -16,6 +17,7 @@ import AuthHeader from '../../../components/AuthHeader';
 import CustomInput from '../../../components/CustomTextInput';
 import CustomButton from '../../../components/CustomButton';
 import FontAwesome6 from 'react-native-vector-icons/FontAwesome6';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {GoogleSignin} from '@react-native-google-signin/google-signin';
 import BottomTab from '../../../routes/BottomTab';
 //.............redux...................
@@ -36,7 +38,12 @@ const LoginScreen = props => {
 
   //..................loader................
   const [showLoader, setshowLoader] = useState(false);
-  //.....................................
+  //...............check......................
+  const [rememberMe, setRememberMe] = useState(false);
+  const handleCheck = () => {
+    setRememberMe(!rememberMe);
+  };
+  //...........................................
   const handleOnChange = (text, CustomTextInput) => {
     setInputs(prevState => ({...prevState, [CustomTextInput]: text}));
   };
@@ -70,6 +77,7 @@ const LoginScreen = props => {
       };
       dispatch(setUserData(userData)); // Dispatch user data to Redux store
     }
+    AsyncStorage.setItem('check-status', rememberMe ? 'true' : 'false'); //....store to local storage
   };
 
   //..................validater....................
@@ -100,9 +108,8 @@ const LoginScreen = props => {
       await GoogleSignin.signOut();
       await GoogleSignin.hasPlayServices({showPlayServicesUpdateDialog: true});
       const userInfo = await GoogleSignin.signIn();
-      console.log('User Info: ', userInfo); // Log the entire userInfo object
-      console.log('User Info name: ', userInfo.data.user.name); // Log the entire userInfo object
-
+      //console.log('User Info: ', userInfo); // Log the entire userInfo object
+      // console.log('User Info name: ', userInfo.data.user.name); // Log the entire userInfo object
       // Check where the ID token is located
       const idToken =
         userInfo.idToken ||
@@ -125,18 +132,21 @@ const LoginScreen = props => {
         id: userInfo.data.user.id,
       };
       // setUserInfo(userData);
-      console.log('Success', 'Google Sign-In Successful!');
+      //console.log('Success', 'Google Sign-In Successful!');
 
       dispatch(setUserData(userData)); // Dispatch user data to Redux store
+      await AsyncStorage.setItem('check-status', rememberMe ? 'true' : 'false'); //....store to local storage
+      //await AsyncStorage.setItem('asm', 'tayyab');
       setshowLoader(false); // hide loader when go to home
       props.navigation.navigate('BottomTab', {user: userInfo});
-      BottomTab;
+      //...............storeData on AsyncStorage....
     } catch (error) {
       console.error(error);
       Alert.alert('Google Sign-In Error', error.message);
     }
   };
 
+  //................................
   return (
     <View style={{flex: 1}}>
       <ScrollView style={styles.screenView}>
@@ -145,6 +155,7 @@ const LoginScreen = props => {
             onPress={() => props.navigation.navigate('BordingScreen')}
           />
           <Text style={styles.heading}>Log In Your Account</Text>
+          {/* ...................Email............................................ */}
           <CustomInput
             placeholder={'Email Address'}
             icon={require('../../../assets/email.png')}
@@ -153,6 +164,7 @@ const LoginScreen = props => {
             errorMessage={errors.email}
             onFocus={() => handleError(null, 'email')}
           />
+          {/* ...................Password............................................ */}
           <CustomInput
             placeholder={'Password'}
             icon={require('../../../assets/lock.png')}
@@ -163,8 +175,27 @@ const LoginScreen = props => {
             onFocus={() => handleError(null, 'password')}
             rightIcon={<FontAwesome6 name="eye" size={20} color="#212121" />}
           />
-          <Text style={styles.text2}>Forgot the password?</Text>
+
+          <TouchableOpacity>
+            <Text style={styles.text2}>Forgot the password?</Text>
+          </TouchableOpacity>
+          {/* ......................checkbox................ */}
+          <TouchableOpacity style={styles.checkboxView} onPress={handleCheck}>
+            <View style={styles.checkbox}>
+              {rememberMe && (
+                <Image
+                  source={require('../../../assets/check.png')}
+                  style={styles.check}
+                />
+              )}
+            </View>
+            <Text>Remember me</Text>
+          </TouchableOpacity>
+
+          {/* ....................................................... */}
+
           <CustomButton title={'Sign in'} onPress={validater} />
+
           <View style={styles.lineView}>
             <View style={styles.line} />
             <Text style={styles.text3}>Or continue with</Text>
@@ -290,5 +321,27 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: 'rgba(0,0,0,0.5)', // Semi-transparent background
     zIndex: 10, // Ensure it's on top
+  },
+  checkboxView: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    margin: 10,
+  },
+  checkbox: {
+    marginRight: 8,
+    borderRadius: 8,
+    borderWidth: 3,
+    width: 24,
+    height: 24,
+    borderColor: '#FFFFFF',
+    backgroundColor: Colors.orange,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  check: {
+    resizeMode: 'contain',
+    height: 6,
+    width: 9,
   },
 });

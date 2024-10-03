@@ -5,7 +5,7 @@ const initialState = {
 };
 
 const userReducer = (state = initialState, action) => {
-  console.log('reducer log', action.payload);
+  // console.log('reducer log', action.payload);
   switch (action.type) {
     case SET_USER_DATA:
       return {

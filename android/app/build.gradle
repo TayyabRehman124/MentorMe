@@ -1,10 +1,7 @@
 apply plugin: "com.android.application"
 apply plugin: "org.jetbrains.kotlin.android"
 apply plugin: "com.facebook.react"
-<<<<<<< HEAD
 apply plugin: "com.google.gms.google-services"
-=======
->>>>>>> 57fa47d2b8731b315fa48daf190ba2cb5b272368
 
 /**
  * This is the configuration block to customize your React Native Android app.
@@ -87,7 +84,6 @@ android {
         versionName "1.0"
     }
     signingConfigs {
-<<<<<<< HEAD
           release {
             if (project.hasProperty('MYAPP_UPLOAD_STORE_FILE')) {
                 storeFile file(MYAPP_UPLOAD_STORE_FILE)
@@ -96,8 +92,6 @@ android {
                 keyPassword MYAPP_UPLOAD_KEY_PASSWORD
             }
         }
-=======
->>>>>>> 57fa47d2b8731b315fa48daf190ba2cb5b272368
         debug {
             storeFile file('debug.keystore')
             storePassword 'android'
