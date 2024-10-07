@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {useEffect, useState} from 'react';
+import {useEffect} from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import LoginScreen from '../../screens/auth/LoginScreen';
@@ -20,59 +20,57 @@ import AccountApprovedCodeScreen from '../../screens/main/AccountApprovedCodeScr
 import SplashScreen from 'react-native-splash-screen';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import auth from '@react-native-firebase/auth'; // Import Firebase Auth
+import {useDispatch, useSelector} from 'react-redux'; //........to send data to redux data...........
+import {setUserData} from '../../components/redux/Action';
 
 const Stack = createNativeStackNavigator();
 
 const RootNavigator = () => {
-  const [initialRoute, setInitialRoute] = useState('LoginScreen'); // Default route
-  const [isLoading, setIsLoading] = useState(true); // Loader state
+  const dispatch = useDispatch(); //....for redux..............
+
+  const user = useSelector(state => state.user.user); //....to receive redux data.......
+  console.log('Data from storage:', user);
 
   useEffect(() => {
-    const checkUserStatus = async () => {
-      try {
-        // Check if "Remember Me" was selected
-        const rememberMe = await AsyncStorage.getItem('check-status');
-
-        // Check Firebase authentication status
-        const unsubscribe = auth().onAuthStateChanged(user => {
-          if (user && rememberMe) {
-            // User is authenticated and "Remember Me" is set
-            setInitialRoute('BottomTab');
-          } else {
-            // User is not authenticated or "Remember Me" is not set
-            setInitialRoute('LoginScreen');
-          }
-          setIsLoading(false);
-        });
-
-        return () => unsubscribe(); // Cleanup subscription
-      } catch (error) {
-        console.error('Error checking user status:', error);
-        setIsLoading(false);
-      }
-    };
-
-    checkUserStatus();
-
-    // Hide splash screen after 2 seconds
-    const timer = setTimeout(() => {
-      SplashScreen.hide();
-    }, 2000);
-
-    return () => clearTimeout(timer); // Clear timer if component unmounts
+    getCurrentUser();
   }, []);
+  const getCurrentUser = async () => {
+    const crurrentUser = auth().currentUser;
+    if (crurrentUser) {
+      console.log('crurrentUser:', userData);
+      const checkStatus = await AsyncStorage.getItem('check-status'); //to get storage data
+      const userData = {
+        name: crurrentUser?.displayName,
+        email: crurrentUser?.email,
+        photo: crurrentUser?.photoURL,
+        id: crurrentUser?.uid,
+        rememberMe: checkStatus,
+      };
+      dispatch(setUserData(userData)); // Dispatch user data to Redux store
+    }
+  };
 
-  if (isLoading) {
-    // Render a loading screen while determining the initial route
-    return null;
-  }
+  //..............splash screen.......................................
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      SplashScreen.hide(); // Hide splash screen after two seconds
+    }, 2000);
+    return () => clearTimeout(timer); // Clear the timer if the component unmounts
+  }, []);
 
   return (
     <NavigationContainer>
-      <Stack.Navigator
-        screenOptions={{headerShown: false}}
-        initialRouteName={initialRoute}>
-        <Stack.Screen name="BordingScreen" component={BordingScreen} />
+      <Stack.Navigator screenOptions={{headerShown: false}}>
+        {user?.rememberMe == 'false' && (
+          <>
+            <Stack.Screen name="BordingScreen" component={BordingScreen} />
+            <Stack.Screen name="LoginScreen" component={LoginScreen} />
+            <Stack.Screen name="SignupScreen" component={SignupScreen} />
+          </>
+        )}
+
+        <Stack.Screen name="BottomTab" component={BottomTab} />
+
         <Stack.Screen name="MessageScreen" component={MessageScreen} />
         <Stack.Screen name="MatchScreen2" component={MatchScreen2} />
         <Stack.Screen
@@ -80,9 +78,6 @@ const RootNavigator = () => {
           component={AccountDeletionScreen}
         />
         <Stack.Screen name="SurveyScreen" component={SurveyScreen} />
-        <Stack.Screen name="LoginScreen" component={LoginScreen} />
-        <Stack.Screen name="SignupScreen" component={SignupScreen} />
-        <Stack.Screen name="BottomTab" component={BottomTab} />
         <Stack.Screen name="SettingsScreen" component={SettingsScreen} />
         <Stack.Screen name="HelpCenterScreen" component={HelpCenterScreen} />
         <Stack.Screen name="AudioCallScreen" component={AudioCallScreen} />

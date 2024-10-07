@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import {
   StyleSheet,
   Text,
@@ -9,7 +9,6 @@ import {
   ScrollView,
   ActivityIndicator,
   Alert,
-  Button,
 } from 'react-native';
 import auth from '@react-native-firebase/auth';
 import Colors from '../../../components/Colors';
@@ -19,7 +18,6 @@ import CustomButton from '../../../components/CustomButton';
 import FontAwesome6 from 'react-native-vector-icons/FontAwesome6';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {GoogleSignin} from '@react-native-google-signin/google-signin';
-import BottomTab from '../../../routes/BottomTab';
 //.............redux...................
 import {useDispatch} from 'react-redux';
 import {setUserData} from '../../../components/redux/Action';
@@ -138,7 +136,7 @@ const LoginScreen = props => {
       await AsyncStorage.setItem('check-status', rememberMe ? 'true' : 'false'); //....store to local storage
       //await AsyncStorage.setItem('asm', 'tayyab');
       setshowLoader(false); // hide loader when go to home
-      props.navigation.navigate('BottomTab', {user: userInfo});
+      props.navigation.navigate('BottomTab');
       //...............storeData on AsyncStorage....
     } catch (error) {
       console.error(error);

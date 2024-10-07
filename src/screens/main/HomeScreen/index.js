@@ -84,8 +84,8 @@ const HomeScreen = () => {
           <View style={styles.headerLeftVw}>
             <Image
               source={
-                user.photo
-                  ? {uri: user.photo}
+                user?.photo
+                  ? {uri: user?.photo}
                   : require('../../../assets/userDumy.png')
               }
               style={styles.profilePic}
